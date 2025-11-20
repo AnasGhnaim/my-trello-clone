@@ -3,6 +3,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Route, Routes } from "react-router";
 import SigninPage from "./Pages/SigninPage";
 import HomePage from "./Pages/HomePage";
+import ListPage from "./Pages/ListPage";
 // import { Provider } from "react-redux";
 // import store from "./store/store";
 
@@ -15,6 +16,7 @@ function App() {
         <Routes>
           <Route path="/" element={<SigninPage />} />
           <Route path="/home" element={<HomePage />} />
+          <Route path="/list" element={<ListPage />} />
         </Routes>
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>

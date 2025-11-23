@@ -6,7 +6,7 @@ interface AddCardProps {
   onCreate: (title: string, description: string) => void;
 }
 
-function AddCardModule({
+function AddCardModal({
   open,
   onClose,
   onCreate,
@@ -59,4 +59,4 @@ function AddCardModule({
   );
 }
 
-export default AddCardModule;
+export default AddCardModal;

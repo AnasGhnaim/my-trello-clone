@@ -3,7 +3,9 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Route, Routes } from "react-router";
 import SigninPage from "./Pages/SigninPage";
 import HomePage from "./Pages/HomePage";
-import ListPage from "./Pages/ListPage";
+
+import Layout from "./Components/Layout";
+import BoardPage from "./Pages/Board";
 // import { Provider } from "react-redux";
 // import store from "./store/store";
 
@@ -15,8 +17,10 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <Routes>
           <Route path="/" element={<SigninPage />} />
-          <Route path="/home" element={<HomePage />} />
-          <Route path="/list" element={<ListPage />} />
+          <Route element={<Layout />}>
+            <Route path="/home" element={<HomePage />} />
+            <Route path="/board" element={<BoardPage />} />
+          </Route>
         </Routes>
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>

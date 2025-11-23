@@ -1,4 +1,5 @@
 import { useState, type JSX } from "react";
+import { createPortal } from "react-dom";
 
 interface ListModuleProps {
   open: boolean;
@@ -22,7 +23,7 @@ function ListModule({
     onClose();
   };
 
-  return (
+  return createPortal(
     <div className="fixed top-2/3 left-1/2 -translate-x-1/2  z-50 bg-white p-6 rounded-lg shadow-2xl w-96 border border-blue-500">
       <h2 className="text-xl font-semibold mb-4">Create New List</h2>
 
@@ -46,7 +47,8 @@ function ListModule({
           Create
         </button>
       </div>
-    </div>
+    </div>,
+    document.getElementById("modal-root")!
   );
 }
 

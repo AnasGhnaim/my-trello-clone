@@ -2,7 +2,7 @@ import { useState, type JSX } from "react";
 import ListCard from "./ListCard";
 import ListModule from "./ListModule";
 
-function List(): JSX.Element {
+function Board(): JSX.Element {
   const [list, setList] = useState([
     {
       id: 1,
@@ -57,6 +57,12 @@ function List(): JSX.Element {
     );
   };
 
+  //don't froget to make this work
+  const editCardList = () => {};
+
+  //don't forget to make this work
+  const deleteCardList = () => {};
+
   return (
     <div className="w-full bg-gray-700 flex flex-col py-10 items-center min-h-screen">
       <h3 className="text-3xl text-white mb-6">Board Title</h3>
@@ -82,6 +88,8 @@ function List(): JSX.Element {
             type={list.type}
             cards={list.cards}
             onAddCard={addCardToList}
+            onEditCard={editCardList}
+            onDeleteCard={deleteCardList}
           />
         ))}
       </div>
@@ -89,4 +97,4 @@ function List(): JSX.Element {
   );
 }
 
-export default List;
+export default Board;

@@ -1,4 +1,5 @@
 import { useState, type JSX } from "react";
+import { createPortal } from "react-dom";
 
 interface CreateBoardModalProps {
   open: boolean;
@@ -22,7 +23,7 @@ function CreateBoardModal({
     onClose();
   };
 
-  return (
+  return createPortal(
     <>
       {/* Popup Box */}
       <div className="fixed top-2/3 left-1/2 -translate-x-1/2 z-50 bg-white p-6 rounded-lg shadow-2xl w-96 border border-blue-500">
@@ -49,7 +50,8 @@ function CreateBoardModal({
           </button>
         </div>
       </div>
-    </>
+    </>,
+    document.getElementById("modal-root")!
   );
 }
 

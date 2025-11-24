@@ -6,7 +6,11 @@ import {
   updateCard,
 } from "../controllers/cardsController";
 
+import { verifyAuth } from "../middleware/auth";
+
 const router = Router();
+
+router.use(verifyAuth);
 
 // Get all cards for a list
 router.get("/:listId", getCardsByList);

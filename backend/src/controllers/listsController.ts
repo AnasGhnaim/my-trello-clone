@@ -4,10 +4,14 @@ import { client } from "../config/db";
 // Get all lists for a specific board
 export const getListsByBoard = async (req: Request, res: Response) => {
   try {
+    const uid = req.user?.uid;
     const { boardId } = req.params;
+
+    if (!uid) return res.status(401).json({ message: "Unauthorized" });
+
     const result = await client.query(
-      "SELECT * FROM lists WHERE board_id = $1 ORDER BY id",
-      [boardId]
+      "SELECT * FROM lists WHERE board_id = $1 AND firebase_uid = $2 ORDER BY id",
+      [boardId, uid]
     );
 
     if (result.length === 0) {
@@ -25,8 +29,10 @@ export const getListsByBoard = async (req: Request, res: Response) => {
 // Create a list
 export const createList = async (req: Request, res: Response) => {
   try {
+    const uid = req.user?.uid;
     const { boardId } = req.params;
     const { type } = req.body;
+    if (!uid) return res.status(401).json({ message: "Unauthorized" });
 
     if (!type) {
       console.log("Missing type for list creation");
@@ -34,8 +40,8 @@ export const createList = async (req: Request, res: Response) => {
     }
 
     const result = await client.query(
-      "INSERT INTO lists (board_id, type) VALUES ($1, $2) RETURNING *",
-      [boardId, type]
+      "INSERT INTO lists (board_id, type,firebase_uid) VALUES ($1, $2, $3) RETURNING *",
+      [boardId, type, uid]
     );
 
     console.log("List created successfully");
@@ -49,10 +55,14 @@ export const createList = async (req: Request, res: Response) => {
 // Delete a list
 export const deleteList = async (req: Request, res: Response) => {
   try {
+    const uid = req.user?.uid;
     const { id } = req.params;
+
+    if (!uid) return res.status(401).json({ message: "Unauthorized" });
+
     const result = await client.query(
-      "DELETE FROM lists WHERE id = $1 RETURNING *",
-      [id]
+      "DELETE FROM lists WHERE id = $1 AND firebase_uid = $2 RETURNING *",
+      [id, uid]
     );
 
     if (result.rowCount === 0) {

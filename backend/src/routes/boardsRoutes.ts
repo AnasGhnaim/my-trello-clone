@@ -5,8 +5,11 @@ import {
   deleteBoard,
   updateBoard,
 } from "../controllers/boardsController";
+import { verifyAuth } from "../middleware/auth";
 
 const router = Router();
+
+router.use(verifyAuth);
 
 // Get all boards
 router.get("/", getBoards);

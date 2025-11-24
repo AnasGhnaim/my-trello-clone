@@ -1,18 +1,20 @@
 import { Request, Response } from "express";
-import { pool } from "../config/db";
+import { client } from "../config/db";
 
 //Get all boards
 export const getBoards = async (req: Request, res: Response) => {
   try {
-    const result = await pool.query("SELECT * FROM boards ORDER BY id");
-    if (result.rows.length === 0) {
-      console.log("No boards found");
-      return res.status(404).json({ message: "No boards found" });
+    const uid = req.user?.uid;
+    if (!uid) {
+      return res.status(401).json({ message: "Unauthorized or expired token" });
     }
-    console.log("Boards retrieved successfully");
-    return res.json(result.rows);
+    const result = await client.query(
+      "SELECT * FROM boards WHERE firebase_uid = $1 ORDER BY id",
+      [uid]
+    );
+    return res.json(result);
   } catch (err) {
-    console.error("Error retrieving boards:", err);
+    console.error(err);
     return res.status(500).json({ message: "Server error" });
   }
 };
@@ -20,21 +22,27 @@ export const getBoards = async (req: Request, res: Response) => {
 // Create a board
 export const createBoard = async (req: Request, res: Response) => {
   try {
+    const uid = req.user?.uid;
     const { title } = req.body;
-    if (!title) {
-      console.log("Missing title for board creation");
-      return res.status(400).json({ message: "Title is required" });
+    if (!uid) {
+      return res.status(401).json({ message: "Unauthorized or expired token" });
     }
 
-    const result = await pool.query(
-      "INSERT INTO boards(title) VALUES($1) RETURNING *",
-      [title]
+    const result = await client.query(
+      "INSERT INTO boards(title, firebase_uid) VALUES($1, $2) RETURNING *",
+      [title, uid]
     );
 
-    console.log("Board created successfully");
-    return res.status(201).json(result.rows[0]);
+    // Directly return the first row safely
+    const board = result[0];
+    if (!board) {
+      console.error("No board returned from INSERT", result);
+      return res.status(500).json({ message: "Board not created properly" });
+    }
+
+    return res.status(201).json(board);
   } catch (err) {
-    console.error("Error creating board:", err);
+    console.error(err);
     return res.status(500).json({ message: "Server error" });
   }
 };
@@ -42,28 +50,27 @@ export const createBoard = async (req: Request, res: Response) => {
 //update a board
 export const updateBoard = async (req: Request, res: Response) => {
   try {
+    const uid = req.user?.uid;
     const { id } = req.params;
     const { title } = req.body;
-
-    if (!title) {
-      console.log("Missing title for board update");
-      return res.status(400).json({ message: "Title is required" });
+    if (!uid) {
+      return res.status(401).json({ message: "Unauthorized or expired token" });
     }
 
-    const result = await pool.query(
-      "UPDATE boards SET title = $1 WHERE id = $2 RETURNING *",
-      [title, id]
+    const result = await client.query(
+      "UPDATE boards SET title = $1 WHERE id = $2 AND firebase_uid = $3 RETURNING *",
+      [title, id, uid]
     );
 
     if (result.rowCount === 0) {
-      console.log(`Board with id ${id} not found`);
-      return res.status(404).json({ message: "Board not found" });
+      return res
+        .status(404)
+        .json({ message: "Board not found or unauthorized" });
     }
 
-    console.log(`Board with id ${id} updated`);
     return res.json(result.rows[0]);
   } catch (err) {
-    console.error("Error updating board:", err);
+    console.error(err);
     return res.status(500).json({ message: "Server error" });
   }
 };
@@ -71,20 +78,26 @@ export const updateBoard = async (req: Request, res: Response) => {
 // Delete a board
 export const deleteBoard = async (req: Request, res: Response) => {
   try {
+    const uid = req.user?.uid;
     const { id } = req.params;
-    const result = await pool.query(
-      "DELETE FROM boards WHERE id = $1 RETURNING *",
-      [id]
-    );
-    if (result.rowCount === 0) {
-      console.log(`Board with id ${id} not found`);
-      return res.status(404).json({ message: "Board not found" });
+    if (!uid) {
+      return res.status(401).json({ message: "Unauthorized or expired token" });
     }
 
-    console.log(`Board with id ${id} deleted`);
+    const result = await client.query(
+      "DELETE FROM boards WHERE id = $1 AND firebase_uid = $2 RETURNING *",
+      [id, uid]
+    );
+
+    if (result.rowCount === 0) {
+      return res
+        .status(404)
+        .json({ message: "Board not found or unauthorized" });
+    }
+
     return res.sendStatus(204);
   } catch (err) {
-    console.error("Error deleting board:", err);
+    console.error(err);
     return res.status(500).json({ message: "Server error" });
   }
 };

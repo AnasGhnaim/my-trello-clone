@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import { pool } from "../config/db";
+import { client } from "../config/db";
 
 // Get all cards for a specific list
 export const getCardsByList = async (req: Request, res: Response) => {
   try {
     const { listId } = req.params;
-    const result = await pool.query(
+    const result = await client.query(
       "SELECT * FROM cards WHERE list_id = $1 ORDER BY id",
       [listId]
     );
@@ -15,7 +15,7 @@ export const getCardsByList = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "No cards found for this list" });
     }
 
-    return res.json(result.rows);
+    return res.json(result);
   } catch (err) {
     console.error("Error retrieving cards:", err);
     return res.status(500).json({ message: "Server error" });
@@ -35,13 +35,13 @@ export const createCard = async (req: Request, res: Response) => {
         .json({ message: "Title and description are required" });
     }
 
-    const result = await pool.query(
+    const result = await client.query(
       "INSERT INTO cards (list_id, title, description) VALUES ($1, $2, $3) RETURNING *",
       [listId, title, description]
     );
 
     console.log("Card created successfully");
-    return res.status(201).json(result.rows[0]);
+    return res.status(201).json(result);
   } catch (err) {
     console.error("Error creating card:", err);
     return res.status(500).json({ message: "Server error" });
@@ -61,7 +61,7 @@ export const updateCard = async (req: Request, res: Response) => {
         .json({ message: "Title and description are required" });
     }
 
-    const result = await pool.query(
+    const result = await client.query(
       "UPDATE cards SET title = $1, description = $2 WHERE id = $3 RETURNING *",
       [title, description, id]
     );
@@ -72,7 +72,7 @@ export const updateCard = async (req: Request, res: Response) => {
     }
 
     console.log(`Card with id ${id} updated`);
-    return res.json(result.rows[0]);
+    return res.json(result);
   } catch (err) {
     console.error("Error updating card:", err);
     return res.status(500).json({ message: "Server error" });
@@ -83,7 +83,7 @@ export const updateCard = async (req: Request, res: Response) => {
 export const deleteCard = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const result = await pool.query(
+    const result = await client.query(
       "DELETE FROM cards WHERE id = $1 RETURNING *",
       [id]
     );

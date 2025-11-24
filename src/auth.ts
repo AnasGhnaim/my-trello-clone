@@ -4,7 +4,8 @@ import { auth, googleProvider, githubProvider } from "./firebaseConfig";
 export const signInWithGoogle = async () => {
   try {
     const result = await signInWithPopup(auth, googleProvider);
-    return result.user;
+    const token = await result.user.getIdToken();
+    return { user: result.user, token };
   } catch (error) {
     console.error("Google login error:", error);
     throw error;
@@ -14,7 +15,8 @@ export const signInWithGoogle = async () => {
 export const signInWithGithub = async () => {
   try {
     const result = await signInWithPopup(auth, githubProvider);
-    return result.user;
+    const token = await result.user.getIdToken();
+    return { user: result.user, token };
   } catch (error) {
     console.error("GitHub login error:", error);
     throw error;

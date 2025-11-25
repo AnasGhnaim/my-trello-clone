@@ -1,24 +1,26 @@
 import type { JSX } from "react";
 import { signInWithGoogle, signInWithGithub } from "../auth";
-import api, { setAuthToken } from "../Api/axiosInstance";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router";
+import { login } from "../store/AuthSlice";
+import { useCookies } from "react-cookie";
 
 function SigninPage(): JSX.Element {
-  const fetchUserBoards = async (token: string) => {
-    // Set token for Axios instance
-    setAuthToken(token);
-
-    // Call backend to get boards for testing
-    const response = await api.get("/boards");
-    return response.data;
-  };
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [, setCookie] = useCookies(["token"]);
 
   const handleGoogleLogin = async () => {
     try {
       const { user, token } = await signInWithGoogle();
-      console.log("Logged in user:", user);
-
-      const boards = await fetchUserBoards(token);
-      console.log("User boards:", boards);
+      const safeUser = {
+        uid: user.uid,
+        displayName: user.displayName,
+        token,
+      };
+      dispatch(login(safeUser));
+      setCookie("token", token, { path: "/", maxAge: 60 * 60 * 2 });
+      navigate("/home");
     } catch (err) {
       console.error("Login or fetch error:", err);
     }
@@ -27,10 +29,14 @@ function SigninPage(): JSX.Element {
   const handleGithubLogin = async () => {
     try {
       const { user, token } = await signInWithGithub();
-      console.log("Logged in user:", user);
-
-      const boards = await fetchUserBoards(token);
-      console.log("User boards:", boards);
+      const safeUser = {
+        uid: user.uid,
+        displayName: user.displayName,
+        token,
+      };
+      dispatch(login(safeUser));
+      setCookie("token", token, { path: "/", maxAge: 60 * 60 * 2 });
+      navigate("/home");
     } catch (err) {
       console.error("Login or fetch error:", err);
     }

@@ -4,8 +4,11 @@ import {
   createList,
   deleteList,
 } from "../controllers/listsController";
+import { verifyAuth } from "../middleware/auth";
 
 const router = Router();
+
+router.use(verifyAuth);
 
 // Get all lists for a board
 router.get("/:boardId", getListsByBoard);

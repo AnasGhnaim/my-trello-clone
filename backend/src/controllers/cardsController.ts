@@ -4,13 +4,17 @@ import { client } from "../config/db";
 // Get all cards for a specific list
 export const getCardsByList = async (req: Request, res: Response) => {
   try {
+    const uid = req.user?.uid;
     const { listId } = req.params;
+
+    if (!uid) return res.status(401).json({ message: "Unauthorized" });
+
     const result = await client.query(
-      "SELECT * FROM cards WHERE list_id = $1 ORDER BY id",
-      [listId]
+      "SELECT * FROM cards WHERE list_id = $1 AND firebase_uid = $2 ORDER BY id",
+      [listId, uid]
     );
 
-    if (result.rows.length === 0) {
+    if (result.length === 0) {
       console.log(`No cards found for list ${listId}`);
       return res.status(404).json({ message: "No cards found for this list" });
     }
@@ -25,8 +29,11 @@ export const getCardsByList = async (req: Request, res: Response) => {
 // Create a card
 export const createCard = async (req: Request, res: Response) => {
   try {
+    const uid = req.user?.uid;
     const { listId } = req.params;
     const { title, description } = req.body;
+
+    if (!uid) return res.status(401).json({ message: "Unauthorized" });
 
     if (!title || !description) {
       console.log("Missing title or description for card creation");
@@ -36,8 +43,8 @@ export const createCard = async (req: Request, res: Response) => {
     }
 
     const result = await client.query(
-      "INSERT INTO cards (list_id, title, description) VALUES ($1, $2, $3) RETURNING *",
-      [listId, title, description]
+      "INSERT INTO cards (list_id, title, description, firebase_uid) VALUES ($1, $2, $3, $4) RETURNING *",
+      [listId, title, description, uid]
     );
 
     console.log("Card created successfully");
@@ -51,8 +58,11 @@ export const createCard = async (req: Request, res: Response) => {
 //update a card
 export const updateCard = async (req: Request, res: Response) => {
   try {
+    const uid = req.user?.uid;
     const { id } = req.params;
     const { title, description } = req.body;
+
+    if (!uid) return res.status(401).json({ message: "Unauthorized" });
 
     if (!title || !description) {
       console.log("Missing title or description for card update");
@@ -62,8 +72,8 @@ export const updateCard = async (req: Request, res: Response) => {
     }
 
     const result = await client.query(
-      "UPDATE cards SET title = $1, description = $2 WHERE id = $3 RETURNING *",
-      [title, description, id]
+      "UPDATE cards SET title = $1, description = $2 WHERE id = $3 AND firebase_uid = $4 RETURNING *",
+      [title, description, id, uid]
     );
 
     if (result.rowCount === 0) {
@@ -82,10 +92,14 @@ export const updateCard = async (req: Request, res: Response) => {
 // Delete a card
 export const deleteCard = async (req: Request, res: Response) => {
   try {
+    const uid = req.user?.uid;
     const { id } = req.params;
+
+    if (!uid) return res.status(401).json({ message: "Unauthorized" });
+
     const result = await client.query(
-      "DELETE FROM cards WHERE id = $1 RETURNING *",
-      [id]
+      "DELETE FROM cards WHERE id = $1  AND firebase_uid = $2 RETURNING  *",
+      [id, uid]
     );
 
     if (result.rowCount === 0) {

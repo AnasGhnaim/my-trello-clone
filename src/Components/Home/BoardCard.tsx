@@ -3,9 +3,11 @@ import { Link } from "react-router";
 
 interface BoardCardProps {
   title: string;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
-function BoardCard({ title }: BoardCardProps): JSX.Element {
+function BoardCard({ title, onEdit, onDelete }: BoardCardProps): JSX.Element {
   return (
     <div className="bg-white p-5 rounded-lg shadow-lg flex flex-col justify-between h-30">
       <h2 className="text-xl font-semibold text-gray-800">{title}</h2>
@@ -16,7 +18,10 @@ function BoardCard({ title }: BoardCardProps): JSX.Element {
         </button>
 
         <div className="flex gap-3">
-          <button className="text-gray-600 hover:text-gray-900 text-xl">
+          <button
+            onClick={onEdit}
+            className="text-gray-600 hover:text-gray-900 text-xl"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -29,7 +34,10 @@ function BoardCard({ title }: BoardCardProps): JSX.Element {
               <path d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
             </svg>
           </button>
-          <button className="text-red-500 hover:text-red-700 text-xl">
+          <button
+            onClick={onDelete}
+            className="text-red-500 hover:text-red-700 text-xl"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"

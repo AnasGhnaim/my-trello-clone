@@ -68,7 +68,7 @@ export const updateBoard = async (req: Request, res: Response) => {
         .json({ message: "Board not found or unauthorized" });
     }
 
-    return res.json(result.rows[0]);
+    return res.json(result);
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Server error" });

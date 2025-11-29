@@ -14,12 +14,7 @@ export const getListsByBoard = async (req: Request, res: Response) => {
       [boardId, uid]
     );
 
-    if (result.length === 0) {
-      console.log(`No lists found for board ${boardId}`);
-      return res.status(404).json({ message: "No lists found for this board" });
-    }
-
-    return res.json(result);
+    return res.json(result || []);
   } catch (err) {
     console.error("Error retrieving lists:", err);
     return res.status(500).json({ message: "Server error" });

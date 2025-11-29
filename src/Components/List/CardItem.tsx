@@ -1,4 +1,4 @@
-import type { JSX } from "react";
+import { useState, type JSX } from "react";
 
 interface Card {
   id: number;
@@ -8,7 +8,7 @@ interface Card {
 
 interface CardItemProps {
   card: Card;
-  onEdit: (cardId: number) => void;
+  onEdit: (cardId: number, title: string, description: string) => void;
   onDelete: (cardId: number) => void;
 }
 
@@ -17,6 +17,15 @@ export default function CardItem({
   onEdit,
   onDelete,
 }: CardItemProps): JSX.Element {
+  const [isEditing, setIsEditing] = useState(false);
+  const [title, setTitle] = useState(card.title);
+  const [description, setDescription] = useState(card.description);
+
+  const handleSave = () => {
+    onEdit(card.id, title, description);
+    setIsEditing(false);
+  };
+
   return (
     <div className="border p-3 my-2 rounded bg-gray-100 shadow-sm">
       {/* Top-right icons */}
@@ -29,7 +38,7 @@ export default function CardItem({
           strokeWidth={2}
           stroke="currentColor"
           className="w-5 h-5 text-blue-600 cursor-pointer hover:text-blue-800"
-          onClick={() => onEdit(card.id)}
+          onClick={() => setIsEditing(!isEditing)}
         >
           <path
             strokeLinecap="round"
@@ -53,8 +62,40 @@ export default function CardItem({
       </div>
 
       {/* Card Content */}
-      <h3 className="text-lg font-bold">{card.title}</h3>
-      <p className="text-sm">{card.description}</p>
+      {isEditing ? (
+        <div className="flex flex-col gap-2">
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="border p-1 rounded"
+          />
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="border p-1 rounded"
+          />
+          <div className="flex justify-end gap-2 mt-1">
+            <button
+              className="px-2 py-1 bg-gray-300 rounded hover:bg-gray-400"
+              onClick={() => setIsEditing(false)}
+            >
+              Cancel
+            </button>
+            <button
+              className="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+              onClick={handleSave}
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      ) : (
+        <>
+          <h3 className="text-lg font-bold">{card.title}</h3>
+          <p className="text-sm">{card.description}</p>
+        </>
+      )}
     </div>
   );
 }

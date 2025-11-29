@@ -18,8 +18,7 @@ function SigninPage(): JSX.Element {
         displayName: user.displayName,
         token,
       };
-      dispatch(login(safeUser));
-      setCookie("token", token, { path: "/", maxAge: 60 * 60 * 2 });
+      dispatch(login({ user: safeUser, setCookie }));
       navigate("/home");
     } catch (err) {
       console.error("Login or fetch error:", err);
@@ -34,8 +33,7 @@ function SigninPage(): JSX.Element {
         displayName: user.displayName,
         token,
       };
-      dispatch(login(safeUser));
-      setCookie("token", token, { path: "/", maxAge: 60 * 60 * 2 });
+      dispatch(login({ user: safeUser, setCookie }));
       navigate("/home");
     } catch (err) {
       console.error("Login or fetch error:", err);

@@ -17,13 +17,21 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    login: (state, action: { payload: User }) => {
-      state.user = action.payload;
-      localStorage.setItem("user", JSON.stringify(action.payload));
+    login: (state, action) => {
+      const { user, setCookie } = action.payload;
+      state.user = user;
+      localStorage.setItem("user", JSON.stringify(user));
+      if (setCookie) {
+        setCookie("token", user.token, { path: "/", maxAge: 60 * 60 * 2 }); // 2 hours
+      }
     },
-    logout: (state) => {
+    logout: (state, action) => {
+      const { removeCookie } = action.payload || {};
       state.user = null;
       localStorage.removeItem("user");
+      if (removeCookie) {
+        removeCookie("token", { path: "/" });
+      }
     },
   },
 });

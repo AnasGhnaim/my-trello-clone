@@ -29,7 +29,7 @@ function App() {
                 }
               >
                 <Route path="/home" element={<HomePage />} />
-                <Route path="/board" element={<BoardPage />} />
+                <Route path="/board/:boardId" element={<BoardPage />} />
               </Route>
             </Routes>
           </CookiesProvider>

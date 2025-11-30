@@ -4,8 +4,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import AddCardModal from "./AddCardModal";
 import CardItem from "./CardItem";
 import {
-  createCards,
-  deleteCards,
+  createNewCard,
+  removeCard,
   fetchCards,
   updateCard,
 } from "../../Utils/cardsApi";
@@ -39,7 +39,7 @@ export default function ListCard({ id, type }: ListCardProps): JSX.Element {
 
   // Create new card
   const createCard = useMutation({
-    mutationFn: createCards,
+    mutationFn: createNewCard,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cards", id] });
       setModalOpen(false);
@@ -64,7 +64,7 @@ export default function ListCard({ id, type }: ListCardProps): JSX.Element {
 
   // Delete card
   const deleteCard = useMutation({
-    mutationFn: deleteCards,
+    mutationFn: removeCard,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["cards", id] }),
     onError: (error: any) => console.error("Cannot delete card", error),
   });

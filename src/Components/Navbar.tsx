@@ -1,16 +1,14 @@
 import type { JSX } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router";
-import { logout } from "../store/AuthSlice";
-import { useCookies } from "react-cookie";
+import { logout } from "../store/authSlice.ts";
 
 function Navbar(): JSX.Element {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [, removeCookie] = useCookies(["token"]);
 
   const handleLogOut = () => {
-    dispatch(logout({ removeCookie }));
+    dispatch(logout());
     navigate("/");
   };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

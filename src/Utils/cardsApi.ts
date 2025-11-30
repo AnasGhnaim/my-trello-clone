@@ -11,7 +11,7 @@ export const fetchCards = async (listId: number) => {
 };
 
 //2-Post create a new card depend on list id. (done)
-export const createCards = async ({
+export const createNewCard = async ({
   listId,
   title,
   description,
@@ -47,7 +47,7 @@ export const updateCard = async ({
 };
 
 //4-Delete card depend on cardId. (done)
-export const deleteCards = async (cardId: number) => {
+export const removeCard = async (cardId: number) => {
   try {
     const res = await api.delete(`/cards/${cardId}`);
     return res.data;

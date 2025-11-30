@@ -14,11 +14,6 @@ export const getCardsByList = async (req: Request, res: Response) => {
       [listId, uid]
     );
 
-    // if (result.length === 0) {
-    //   console.log(`No cards found for list ${listId}`);
-    //   return res.status(404).json({ message: "No cards found for this list" });
-    // }
-
     return res.json(result || []);
   } catch (err) {
     console.error("Error retrieving cards:", err);

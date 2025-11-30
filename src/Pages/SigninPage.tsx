@@ -2,13 +2,11 @@ import type { JSX } from "react";
 import { signInWithGoogle, signInWithGithub } from "../auth";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
-import { login } from "../store/AuthSlice";
-import { useCookies } from "react-cookie";
+import { login } from "../store/authSlice";
 
 function SigninPage(): JSX.Element {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [, setCookie] = useCookies(["token"]);
 
   const handleGoogleLogin = async () => {
     try {
@@ -18,8 +16,7 @@ function SigninPage(): JSX.Element {
         displayName: user.displayName,
         token,
       };
-      dispatch(login(safeUser));
-      setCookie("token", token, { path: "/", maxAge: 60 * 60 * 2 });
+      dispatch(login({ user: safeUser }));
       navigate("/home");
     } catch (err) {
       console.error("Login or fetch error:", err);
@@ -34,8 +31,7 @@ function SigninPage(): JSX.Element {
         displayName: user.displayName,
         token,
       };
-      dispatch(login(safeUser));
-      setCookie("token", token, { path: "/", maxAge: 60 * 60 * 2 });
+      dispatch(login({ user: safeUser }));
       navigate("/home");
     } catch (err) {
       console.error("Login or fetch error:", err);

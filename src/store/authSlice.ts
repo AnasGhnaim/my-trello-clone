@@ -1,4 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { Cookies } from "react-cookie";
+
+const cookies = new Cookies();
+
 export type User = {
   uid: string;
   displayName: string | null;
@@ -17,13 +21,23 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    login: (state, action: { payload: User }) => {
-      state.user = action.payload;
-      localStorage.setItem("user", JSON.stringify(action.payload));
+    login: (state, action) => {
+      const { user } = action.payload;
+      state.user = user;
+
+      localStorage.setItem("user", JSON.stringify(user));
+
+      cookies.set("token", user.token, {
+        path: "/",
+        maxAge: 60 * 60 * 2,
+      });
     },
     logout: (state) => {
       state.user = null;
+
       localStorage.removeItem("user");
+
+      cookies.remove("token", { path: "/" });
     },
   },
 });

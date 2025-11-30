@@ -46,18 +46,11 @@ function Boards(): JSX.Element {
     mutationFn: ({ id, title }: { id: number; title: string }) =>
       editBoards(id, title),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["boards"] }),
-    onError: (error) => {
-      console.error("unable to edit", error);
-    },
+    onError: (err) => console.error("Cannot update board", err),
   });
 
-  const handleEdit = (id: number) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const board = boards.find((b: any) => b.id === id);
-    const newTitle = prompt("Edit board title", board.title);
-    if (newTitle) {
-      updateBoard.mutate({ id, title: newTitle });
-    }
+  const handleEdit = (id: number, newTitle: string) => {
+    updateBoard.mutate({ id, title: newTitle });
   };
 
   //Delete board
@@ -105,7 +98,8 @@ function Boards(): JSX.Element {
             <BoardCard
               key={board.id}
               title={board.title}
-              onEdit={() => handleEdit(Number(board.id))}
+              id={Number(board.id)}
+              onEdit={handleEdit}
               onDelete={() => handleDelete(Number(board.id))}
             />
           ))}

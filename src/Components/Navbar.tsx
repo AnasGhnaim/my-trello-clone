@@ -1,17 +1,14 @@
 import type { JSX } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router";
-import { logout } from "../store/AuthSlice";
-import { useCookies } from "react-cookie";
+import { logout } from "../store/authSlice.ts";
 
 function Navbar(): JSX.Element {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [, removeCookie] = useCookies(["token"]);
 
   const handleLogOut = () => {
     dispatch(logout());
-    removeCookie("token", { path: "/" });
     navigate("/");
   };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -29,12 +26,10 @@ function Navbar(): JSX.Element {
         </Link>
       </div>
       <div className="flex space-x-6 text-lg font-medium">
-        {user.displayName ? (
+        {user.displayName && (
           <h3 className="text-xl flex text-end text-white font-bold">
             {user?.displayName}
           </h3>
-        ) : (
-          <div></div>
         )}
         <button
           className="flex items-center  stroke-white"

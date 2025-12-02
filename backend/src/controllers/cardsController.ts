@@ -55,28 +55,27 @@ export const updateCard = async (req: Request, res: Response) => {
   try {
     const uid = req.user?.uid;
     const { id } = req.params;
-    const { title, description } = req.body;
+    const { title, description, listId } = req.body;
 
     if (!uid) return res.status(401).json({ message: "Unauthorized" });
 
-    if (!title || !description) {
-      console.log("Missing title or description for card update");
-      return res
-        .status(400)
-        .json({ message: "Title and description are required" });
-    }
-
     const result = await client.query(
-      "UPDATE cards SET title = $1, description = $2 WHERE id = $3 AND firebase_uid = $4 RETURNING *",
-      [title, description, id, uid]
+      `
+      UPDATE cards
+      SET 
+        title = COALESCE($1, title),
+        description = COALESCE($2, description),
+        list_id = COALESCE($3, list_id)
+      WHERE id = $4 AND firebase_uid = $5
+      RETURNING *
+      `,
+      [title, description, listId, id, uid]
     );
 
     if (result.rowCount === 0) {
-      console.log(`Card with id ${id} not found`);
       return res.status(404).json({ message: "Card not found" });
     }
 
-    console.log(`Card with id ${id} updated`);
     return res.json(result);
   } catch (err) {
     console.error("Error updating card:", err);

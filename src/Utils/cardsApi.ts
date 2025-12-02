@@ -33,13 +33,19 @@ export const updateCard = async ({
   cardId,
   title,
   description,
+  listId,
 }: {
   cardId: number;
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
+  listId?: number;
 }) => {
   try {
-    const res = await api.put(`cards/${cardId}`, { title, description });
+    const res = await api.put(`/cards/${cardId}`, {
+      title,
+      description,
+      listId,
+    });
     return res.data;
   } catch (error) {
     console.error("Can not update Card", error);

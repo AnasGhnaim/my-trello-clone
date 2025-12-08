@@ -1,7 +1,7 @@
 import type { JSX } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router";
-import { logout } from "../store/authSlice.ts";
+import { logout } from "../store/authSlice";
 
 function Navbar(): JSX.Element {
   const dispatch = useDispatch();

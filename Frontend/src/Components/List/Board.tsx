@@ -78,7 +78,7 @@ function Board(): JSX.Element {
     const newlistId = +over.id;
 
     const oldList = lists.find((list: any) => {
-      const cards = queryClient.getQueryData(["cards", list.id]) || [];
+      const cards: any[] = queryClient.getQueryData(["cards", list.id]) || [];
       return cards.some((c: any) => c.id === cardId);
     });
 

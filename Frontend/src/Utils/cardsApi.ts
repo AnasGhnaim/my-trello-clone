@@ -1,4 +1,4 @@
-import api from "../Utils/axiosInstance";
+import api from "./axiosInstance";
 
 //1-Get Fetch cards.(done)
 export const fetchCards = async (listId: number) => {

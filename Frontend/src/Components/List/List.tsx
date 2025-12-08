@@ -2,7 +2,7 @@
 import { useState, type JSX } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import AddCardModal from "./AddCardModal";
-import CardItem from "./CardItem";
+import Card from "./Card";
 import {
   createNewCard,
   removeCard,
@@ -10,6 +10,8 @@ import {
   updateCard,
 } from "../../Utils/cardsApi";
 import Spinner from "../Spinner";
+
+import { useDroppable } from "@dnd-kit/core";
 
 interface Card {
   id: number;
@@ -23,7 +25,7 @@ interface ListCardProps {
   cards: Card[];
 }
 
-export default function ListCard({ id, type }: ListCardProps): JSX.Element {
+export default function List({ id, type }: ListCardProps): JSX.Element {
   const queryClient = useQueryClient();
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -69,18 +71,26 @@ export default function ListCard({ id, type }: ListCardProps): JSX.Element {
     onError: (error: any) => console.error("Cannot delete card", error),
   });
 
+  //Drag and drop complete logic
+
+  const { setNodeRef: draggableRef } = useDroppable({
+    id,
+  });
   if (isLoading) return <Spinner />;
   if (error) return <p className="text-red-400">Failed to fetch cards</p>;
-
   return (
-    <div className="bg-white p-5 w-64 rounded-lg shadow-lg flex flex-col">
+    // <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCorners}>
+    <div
+      ref={draggableRef}
+      className="bg-white p-5 w-64 rounded-lg shadow-lg flex flex-col "
+    >
       <h1 className="text-center text-2xl text-white bg-blue-900 p-2 rounded">
-        {type}
+        {type + " " + id}
       </h1>
 
       <div className="mt-3">
         {cards.map((card: Card) => (
-          <CardItem
+          <Card
             key={card.id}
             card={card}
             onEdit={handleEditCard}
@@ -104,5 +114,6 @@ export default function ListCard({ id, type }: ListCardProps): JSX.Element {
         }
       />
     </div>
+    // </DndContext>
   );
 }
